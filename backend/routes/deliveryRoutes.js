@@ -11,6 +11,7 @@ router.post('/delivery/captureSerial',deliveryController.captureSerial)
 router.post('/delivery/complete',deliveryController.completeDelivery)
 router.post('/delivery/destinationInsert',deliveryController.destinationInsert)
 router.get('/delivery/destinationList',deliveryController.destinationList)
+router.post('/delivery/totalDelivery',deliveryController.totalDelivery)
 
 
 module.exports = router

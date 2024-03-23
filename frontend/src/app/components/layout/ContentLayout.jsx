@@ -28,7 +28,9 @@ import {
   CodepenOutlined,
   SelectOutlined,
   TableOutlined,
-  NumberOutlined 
+  NumberOutlined,
+  FundProjectionScreenOutlined,
+  DeliveredProcedureOutlined
 } from '@ant-design/icons';
 import { Layout, Menu, theme, Space, Button  } from 'antd';
 import logo from "../../../../public/dermadelLogo.png"
@@ -67,6 +69,9 @@ const items = [
     getItem('Seriales', 'seriales', <BarcodeOutlined />),
     getItem('Estante', 'estante', <TableOutlined />),
     getItem('Totales', 'total', <NumberOutlined />),
+  ]),
+  getItem('Reportes', 'sub5', <FundProjectionScreenOutlined />,[
+    getItem('Salidas', 'salidas', <DeliveredProcedureOutlined />),
   ]),
   getItem('Configuracion', 'sub3', <FolderAddOutlined />, [
     getItem('Material', 'material', <PlusOutlined />),
@@ -122,7 +127,10 @@ export default function ContentLayout({ content }) {
     }
     else if(key === 'total'){
       router.push('/inventory/total')
+    }else if(key === 'salidas'){
+      router.push('/reports/deliveries')
     }
+
 
   };
 

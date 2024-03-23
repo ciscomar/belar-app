@@ -77,6 +77,20 @@ deliveryController.destinationList = async (req, res) => {
     }
 }
 
+deliveryController.totalDelivery = async (req, res) => {
+    const { startDate, endDate } = req.body;
+    
+    try {
+        const formattedStartDate = new Date(startDate).toISOString().split('T')[0];
+        const formattedEndDate = new Date(endDate).toISOString().split('T')[0];
+        
+        const response = await deliveryFunctions.totalQuantity(formattedStartDate, formattedEndDate);
+        res.status(200).json(response);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
 
 
 

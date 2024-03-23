@@ -117,26 +117,38 @@ productioFunctions.serialRack = async (serial, ubication)=> {
 
 productioFunctions.changePieces = async (id)=> {
   try {
-
     const validateSerial = await schemas.productionSchema.findOne({ _id: id });
-    const createCopywithoutserial = await schemas.productionSchema.create({
-      user:validateSerial.user,
-      material:validateSerial.material,
-      description:validateSerial.description,
-      productionDate:validateSerial.productionDate,
-      expireDate:validateSerial.expireDate,
-      pieces:validateSerial.pieces,
-      status: 'active',
-      ubication: 'Estanteria',
-      lote:validateSerial.lote,
-      isSerial:false
-    });
+    
+    // Check if there is a document with the same material and lote in "Estanteria"
+    const existingDocument = await schemas.productionSchema.findOne({ material: validateSerial.material, lote: validateSerial.lote, ubication: 'Estanteria' });
+
+    if (existingDocument) {
+      // If document exists, update the pieces by summing the existing pieces with the pieces from the original document
+      const updatedPieces = existingDocument.pieces + validateSerial.pieces;
+      // Update the existing document with new pieces
+      await schemas.productionSchema.findByIdAndUpdate(existingDocument._id, { $set: { pieces: updatedPieces } });
+    } else {
+      // If document doesn't exist, create a new document
+      await schemas.productionSchema.create({
+        user: validateSerial.user,
+        material: validateSerial.material,
+        description: validateSerial.description,
+        productionDate: validateSerial.productionDate,
+        expireDate: validateSerial.expireDate,
+        pieces: validateSerial.pieces,
+        status: 'active',
+        ubication: 'Estanteria',
+        lote: validateSerial.lote,
+        isSerial: false
+      });
+    }
+
+    // Change the status of the original document
     const changePieces = await schemas.productionSchema.findOneAndUpdate({ _id: id }, { $set: { status: 'changed to pieces' } }, { new: true });
-    return changePieces
+    return changePieces;
     
   } catch (error) {
-    throw error
-    
+    throw error;
   }
 }
 

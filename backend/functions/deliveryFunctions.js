@@ -119,4 +119,105 @@ deliveryFunctions.destinationList = async () => {
 
 
 
+//get deliveries with serials from startdate to enddate
+deliveryFunctions.totalQuantity = async (startDate, endDate) => {
+  const startDateConverted = new Date(startDate);
+  const endDateConverted = new Date(endDate);
+
+  endDateConverted.setDate(endDateConverted.getDate() + 1);
+
+
+  
+  try {
+    const result = await schemas.deliverySchema.aggregate([
+      {
+        $match: {
+          date: { $gte: startDateConverted, $lte: endDateConverted },
+          status: 'completed'
+        }
+      },
+      {
+        $lookup: {
+          from: 'productions',
+          let: { deliveryId: { $toString: "$_id" } }, 
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ["$delivery", "$$deliveryId"] } 
+              }
+            }
+          ],
+          as: 'productionDetails'
+        }
+      },
+      {
+        $unwind: "$productionDetails" // Unwind the productionDetails array
+      },
+      {
+        $group: {
+          _id: {
+            destination: "$destination", // Group by destination
+            material: "$productionDetails.material", // Sub-group by material
+            date: "$date"
+          },
+          description: { $first: "$productionDetails.description" }, // Get the description for each material
+          totalPieces: { $sum: "$productionDetails.pieces" }, // Sum the pieces for each material
+        }
+      }
+
+    ])
+
+    //take destincation and material out of _id
+    result.forEach(element => {
+      element.destination = element._id.destination;
+      element.material = element._id.material;
+      element.date = element._id.date;
+      delete element._id;
+    });
+  
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
+
+
+// //get deliveries with serials from startdate to enddate
+// deliveryFunctions.totalQuantity = async (startDate, endDate) => {
+//   const startDateConverted = new Date(startDate);
+//   const endDateConverted = new Date(endDate);
+//   try {
+//     const result = await schemas.deliverySchema.aggregate([
+//       {
+//         $match: {
+//           date: { $gte: startDateConverted, $lte: endDateConverted },
+//           status: 'completed'
+//         }
+//       },
+//       {
+//         $lookup: {
+//           from: 'productions',
+//           let: { deliveryId: { $toString: "$_id" } }, 
+//           pipeline: [
+//             {
+//               $match: {
+//                 $expr: { $eq: ["$delivery", "$$deliveryId"] } 
+//               }
+//             }
+//           ],
+//           as: 'productionDetails'
+//         }
+//       },
+
+//     ])
+
+//     return result;
+//   } catch (err) {
+//     throw err;
+//   }
+// };
+
+
+
 module.exports = deliveryFunctions;
