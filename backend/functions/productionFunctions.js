@@ -120,7 +120,7 @@ productioFunctions.changePieces = async (id)=> {
     const validateSerial = await schemas.productionSchema.findOne({ _id: id });
     
     // Check if there is a document with the same material and lote in "Estanteria"
-    const existingDocument = await schemas.productionSchema.findOne({ material: validateSerial.material, lote: validateSerial.lote, ubication: 'Estanteria' });
+    const existingDocument = await schemas.productionSchema.findOne({ material: validateSerial.material, lote: validateSerial.lote, ubication: 'Estanteria', status:'active' });
 
     console.log(existingDocument);
 
