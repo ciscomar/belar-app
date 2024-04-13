@@ -122,11 +122,17 @@ productioFunctions.changePieces = async (id)=> {
     // Check if there is a document with the same material and lote in "Estanteria"
     const existingDocument = await schemas.productionSchema.findOne({ material: validateSerial.material, lote: validateSerial.lote, ubication: 'Estanteria' });
 
+    console.log(existingDocument);
+
     if (existingDocument) {
       // If document exists, update the pieces by summing the existing pieces with the pieces from the original document
       const updatedPieces = existingDocument.pieces + validateSerial.pieces;
+      console.log(updatedPieces);
       // Update the existing document with new pieces
-      await schemas.productionSchema.findByIdAndUpdate(existingDocument._id, { $set: { pieces: updatedPieces } });
+      const sum = await schemas.productionSchema.findByIdAndUpdate(existingDocument._id, { $set: { pieces: updatedPieces } });
+
+
+      console.log(sum);
     } else {
       // If document doesn't exist, create a new document
       await schemas.productionSchema.create({
