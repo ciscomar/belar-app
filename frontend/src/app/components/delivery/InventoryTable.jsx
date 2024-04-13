@@ -60,6 +60,10 @@ export default function Inventorytable () {
       title: 'Serial',
       dataIndex: 'serial',
     },
+    {
+      title: 'Lote',
+      dataIndex: 'lote',
+    },
   ];
   
 
